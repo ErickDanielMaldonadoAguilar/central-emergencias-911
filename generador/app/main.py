@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI, status
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from generador.app.models.evento import (
     EventoEmergencia,
@@ -12,6 +16,10 @@ from generador.app.services.generador_eventos import (
 )
 
 
+DIRECTORIO_APP = Path(__file__).resolve().parent
+DIRECTORIO_STATIC = DIRECTORIO_APP / "static"
+
+
 app = FastAPI(
     title="Central de Emergencias 911 - Generador",
     description=(
@@ -22,14 +30,24 @@ app = FastAPI(
 )
 
 
-@app.get("/", tags=["Estado"])
-def obtener_inicio() -> dict[str, str]:
-    """Confirma que el servicio generador está funcionando."""
+app.mount(
+    "/static",
+    StaticFiles(directory=DIRECTORIO_STATIC),
+    name="static",
+)
 
-    return {
-        "mensaje": "Generador de emergencias funcionando",
-        "estado": "activo",
-    }
+
+@app.get(
+    "/",
+    response_class=FileResponse,
+    include_in_schema=False,
+)
+def mostrar_interfaz() -> FileResponse:
+    """Muestra la interfaz web del generador."""
+
+    return FileResponse(
+        DIRECTORIO_STATIC / "index.html"
+    )
 
 
 @app.get("/health", tags=["Estado"])
