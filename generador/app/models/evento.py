@@ -51,7 +51,10 @@ class Ubicacion(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    sector: str = Field(min_length=2, max_length=80)
+    sector: str = Field(
+        min_length=2,
+        max_length=80,
+    )
 
 
 class SolicitudLlamadaIndividual(BaseModel):
@@ -64,7 +67,7 @@ class SolicitudLlamadaIndividual(BaseModel):
 
 
 class EventoEmergencia(SolicitudLlamadaIndividual):
-    """Evento completo que posteriormente será enviado a Kafka."""
+    """Evento completo que será enviado a Kafka."""
 
     evento_id: UUID
     numero_reporte: str
@@ -79,8 +82,16 @@ class EventoEmergencia(SolicitudLlamadaIndividual):
 class SolicitudLote(BaseModel):
     """Parámetros para generar un lote masivo de llamadas."""
 
-    cantidad: int = Field(ge=1, le=10_000)
-    semilla: int | None = Field(default=None, ge=0)
+    cantidad: int = Field(
+        ge=1,
+        le=10_000,
+    )
+
+    semilla: int | None = Field(
+        default=None,
+        ge=0,
+    )
+
     escenario: Literal["normal"] = "normal"
 
 
@@ -96,3 +107,20 @@ class ResultadoLote(BaseModel):
     distribucion_tipos: dict[str, int]
     distribucion_prioridades: dict[str, int]
     muestra: list[EventoEmergencia]
+
+
+class ConfirmacionKafka(BaseModel):
+    """Datos confirmados por Kafka después de publicar un evento."""
+
+    topic: str
+    particion: int
+    offset: int
+    distrito_id: str
+    evento_id: str
+
+
+class ResultadoEventoKafka(BaseModel):
+    """Evento generado junto con la confirmación del broker."""
+
+    evento: EventoEmergencia
+    kafka: ConfirmacionKafka
