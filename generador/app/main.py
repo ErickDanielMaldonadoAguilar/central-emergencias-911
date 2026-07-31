@@ -2,9 +2,14 @@ from fastapi import FastAPI, status
 
 from generador.app.models.evento import (
     EventoEmergencia,
+    ResultadoLote,
     SolicitudLlamadaIndividual,
+    SolicitudLote,
 )
-from generador.app.services.generador_eventos import crear_evento_individual
+from generador.app.services.generador_eventos import (
+    crear_evento_individual,
+    crear_lote_eventos,
+)
 
 
 app = FastAPI(
@@ -49,3 +54,17 @@ def generar_evento_individual(
     """Genera una llamada individual validada."""
 
     return crear_evento_individual(solicitud)
+
+
+@app.post(
+    "/eventos/lote",
+    response_model=ResultadoLote,
+    status_code=status.HTTP_201_CREATED,
+    tags=["Eventos"],
+)
+def generar_eventos_lote(
+    solicitud: SolicitudLote,
+) -> ResultadoLote:
+    """Genera múltiples llamadas en una sola operación."""
+
+    return crear_lote_eventos(solicitud)

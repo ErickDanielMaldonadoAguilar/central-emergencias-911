@@ -74,3 +74,25 @@ class EventoEmergencia(SolicitudLlamadaIndividual):
     lote_id: UUID | None = None
     escenario: str = "normal"
     version_esquema: str = "1.0"
+
+
+class SolicitudLote(BaseModel):
+    """Parámetros para generar un lote masivo de llamadas."""
+
+    cantidad: int = Field(ge=1, le=10_000)
+    semilla: int | None = Field(default=None, ge=0)
+    escenario: Literal["normal"] = "normal"
+
+
+class ResultadoLote(BaseModel):
+    """Resumen de una generación masiva de llamadas."""
+
+    lote_id: UUID
+    cantidad_solicitada: int
+    cantidad_generada: int
+    duracion_ms: float
+    eventos_por_segundo: float
+    distribucion_distritos: dict[str, int]
+    distribucion_tipos: dict[str, int]
+    distribucion_prioridades: dict[str, int]
+    muestra: list[EventoEmergencia]
