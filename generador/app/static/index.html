@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Central de Emergencias 911</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/styles.css"
+    >
+</head>
+
+<body>
+    <header>
+        <div class="contenedor">
+            <p class="subtitulo">
+                Proyecto integrador de Big Data
+            </p>
+
+            <h1>Central de Emergencias 911</h1>
+
+            <p>
+                Generador de llamadas individuales y por lotes
+                para la simulación.
+            </p>
+
+            <div id="estadoServicio" class="estado">
+                Comprobando servicio...
+            </div>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <section class="introduccion">
+            <h2>Generador de datos</h2>
+
+            <p>
+                Esta pantalla permite crear una llamada manualmente
+                o generar miles de eventos para simular un pico de
+                emergencias.
+            </p>
+        </section>
+
+        <section class="formularios">
+            <article class="tarjeta">
+                <h2>Llamada individual</h2>
+
+                <form id="formularioIndividual">
+                    <label for="distrito">
+                        Distrito
+                    </label>
+
+                    <select id="distrito" required>
+                        <option value="D-01">
+                            D-01 — Centro
+                        </option>
+
+                        <option value="D-02">
+                            D-02 — Norte
+                        </option>
+
+                        <option value="D-03">
+                            D-03 — Sur
+                        </option>
+
+                        <option value="D-04">
+                            D-04 — Este
+                        </option>
+
+                        <option value="D-05">
+                            D-05 — Oeste
+                        </option>
+
+                        <option value="D-06">
+                            D-06 — Comayagüela
+                        </option>
+                    </select>
+
+                    <label for="tipoEmergencia">
+                        Tipo de emergencia
+                    </label>
+
+                    <select id="tipoEmergencia" required>
+                        <option value="EM-01">
+                            Emergencia médica
+                        </option>
+
+                        <option value="EM-02">
+                            Accidente de tránsito
+                        </option>
+
+                        <option value="EM-03">
+                            Incendio
+                        </option>
+
+                        <option value="EM-04">
+                            Seguridad ciudadana
+                        </option>
+
+                        <option value="EM-05">
+                            Rescate
+                        </option>
+
+                        <option value="EM-06">
+                            Inundación o deslizamiento
+                        </option>
+                    </select>
+
+                    <label for="prioridad">
+                        Prioridad
+                    </label>
+
+                    <select id="prioridad" required>
+                        <option value="baja">
+                            Baja
+                        </option>
+
+                        <option value="media" selected>
+                            Media
+                        </option>
+
+                        <option value="alta">
+                            Alta
+                        </option>
+
+                        <option value="critica">
+                            Crítica
+                        </option>
+                    </select>
+
+                    <label for="sector">
+                        Sector simulado
+                    </label>
+
+                    <input
+                        id="sector"
+                        type="text"
+                        value="Bulevar Suyapa"
+                        minlength="2"
+                        maxlength="80"
+                        required
+                    >
+
+                    <button
+                        id="botonIndividual"
+                        type="submit"
+                    >
+                        Generar llamada
+                    </button>
+                </form>
+            </article>
+
+            <article class="tarjeta">
+                <h2>Generación por lotes</h2>
+
+                <form id="formularioLote">
+                    <label for="cantidad">
+                        Cantidad de llamadas
+                    </label>
+
+                    <input
+                        id="cantidad"
+                        type="number"
+                        value="1000"
+                        min="1"
+                        max="10000"
+                        required
+                    >
+
+                    <small>
+                        El máximo permitido es de 10,000 eventos.
+                    </small>
+
+                    <label for="semilla">
+                        Semilla
+                    </label>
+
+                    <input
+                        id="semilla"
+                        type="number"
+                        value="911"
+                        min="0"
+                    >
+
+                    <small>
+                        La semilla permite repetir la misma
+                        distribución.
+                    </small>
+
+                    <button
+                        id="botonLote"
+                        type="submit"
+                    >
+                        Generar lote
+                    </button>
+                </form>
+            </article>
+        </section>
+
+        <section class="tarjeta resultado">
+            <div class="cabecera-resultado">
+                <div>
+                    <h2>Resultado</h2>
+
+                    <p id="mensajeResultado">
+                        Todavía no se ha generado ningún evento.
+                    </p>
+                </div>
+
+                <span id="estadoResultado">
+                    En espera
+                </span>
+            </div>
+
+            <div id="metricas" class="metricas oculto">
+                <div>
+                    <span>Eventos generados</span>
+
+                    <strong id="cantidadGenerada">
+                        0
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Duración</span>
+
+                    <strong id="duracionGeneracion">
+                        0 ms
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Eventos por segundo</span>
+
+                    <strong id="eventosSegundo">
+                        0
+                    </strong>
+                </div>
+            </div>
+
+            <pre id="salida">Sin resultados.</pre>
+        </section>
+
+        <aside class="nota">
+            Los distritos, sectores y cantidades utilizadas son
+            datos simulados con fines académicos. No representan
+            información oficial del 911 de Honduras.
+        </aside>
+    </main>
+
+    <script
+        src="/static/app.js"
+        defer
+    ></script>
+</body>
+</html>

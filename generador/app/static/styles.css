@@ -1,0 +1,269 @@
+:root {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #172033;
+    background: #f3f6fa;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+header {
+    padding: 40px 0;
+    color: white;
+    background: #173f68;
+}
+
+.contenedor {
+    width: min(1100px, calc(100% - 32px));
+    margin: 0 auto;
+}
+
+header h1 {
+    margin: 5px 0 10px;
+    font-size: 2.4rem;
+}
+
+header p {
+    max-width: 700px;
+    line-height: 1.5;
+}
+
+.subtitulo {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.estado {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 0.9rem;
+}
+
+.estado-activo {
+    background: #157347;
+}
+
+.estado-error {
+    background: #a52834;
+}
+
+main {
+    padding: 32px 0 60px;
+}
+
+.introduccion {
+    margin-bottom: 22px;
+}
+
+.introduccion p {
+    color: #5f6b7b;
+    line-height: 1.5;
+}
+
+.formularios {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+}
+
+.tarjeta {
+    padding: 22px;
+    border: 1px solid #dce3ec;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 8px 22px rgba(30, 50, 75, 0.06);
+}
+
+.tarjeta h2 {
+    margin-top: 0;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+input,
+select,
+button {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px;
+    border-radius: 7px;
+    font: inherit;
+}
+
+input,
+select {
+    border: 1px solid #bbc6d3;
+    background: white;
+}
+
+input:focus,
+select:focus {
+    border-color: #21699a;
+    outline: 2px solid rgba(33, 105, 154, 0.15);
+}
+
+small {
+    color: #69778a;
+}
+
+button {
+    margin-top: 15px;
+    border: none;
+    color: white;
+    background: #1c5f8f;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #174c72;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.fila {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.fila div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.resultado {
+    margin-top: 22px;
+}
+
+.cabecera-resultado {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.cabecera-resultado p {
+    margin-bottom: 0;
+    color: #657185;
+}
+
+#estadoResultado {
+    padding: 7px 11px;
+    border-radius: 20px;
+    background: #e5eaf0;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.resultado-exito {
+    color: #146c43;
+    background: #d9f2e4 !important;
+}
+
+.resultado-error {
+    color: #9a2c35;
+    background: #f8d7da !important;
+}
+
+.resultado-procesando {
+    color: #7a5700;
+    background: #fff0c2 !important;
+}
+
+.metricas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.metricas div {
+    padding: 14px;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    background: #f7f9fc;
+}
+
+.metricas span {
+    display: block;
+    margin-bottom: 5px;
+    color: #657185;
+    font-size: 0.85rem;
+}
+
+.metricas strong {
+    font-size: 1.2rem;
+}
+
+pre {
+    max-height: 450px;
+    margin-top: 20px;
+    padding: 17px;
+    overflow: auto;
+    border-radius: 9px;
+    color: #e7edf4;
+    background: #172033;
+    font-family: Consolas, monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.nota {
+    margin-top: 20px;
+    padding: 15px;
+    border-left: 4px solid #1c5f8f;
+    border-radius: 7px;
+    color: #526174;
+    background: #e6f1f8;
+    line-height: 1.5;
+}
+
+.oculto {
+    display: none;
+}
+
+@media (max-width: 760px) {
+    .formularios,
+    .metricas {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 500px) {
+    .fila {
+        grid-template-columns: 1fr;
+    }
+
+    .cabecera-resultado {
+        flex-direction: column;
+    }
+}
