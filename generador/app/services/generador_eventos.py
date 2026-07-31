@@ -138,29 +138,13 @@ def crear_lote_eventos(
             perfil["sectores"]
         )
 
-        latitud = round(
-            perfil["latitud"]
-            + generador_aleatorio.uniform(-0.008, 0.008),
-            6,
-        )
-
-        longitud = round(
-            perfil["longitud"]
-            + generador_aleatorio.uniform(-0.008, 0.008),
-            6,
-        )
-
-        ubicacion = Ubicacion(
-            sector=sector,
-            latitud=latitud,
-            longitud=longitud,
-        )
-
         evento = _construir_evento(
             distrito_id=distrito,
             tipo_emergencia=tipo_emergencia,
             prioridad=prioridad,
-            ubicacion=ubicacion,
+            ubicacion=Ubicacion(
+                sector=sector,
+            ),
             modo_generacion="lote",
             lote_id=lote_id,
             escenario=solicitud.escenario,

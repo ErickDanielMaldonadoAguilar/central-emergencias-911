@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class DistritoId(str, Enum):
@@ -47,11 +47,11 @@ class EstadoLlamada(str, Enum):
 
 
 class Ubicacion(BaseModel):
-    """Ubicación simulada donde ocurre la emergencia."""
+    """Sector simulado donde ocurre la emergencia."""
+
+    model_config = ConfigDict(extra="forbid")
 
     sector: str = Field(min_length=2, max_length=80)
-    latitud: float = Field(ge=13.90, le=14.30)
-    longitud: float = Field(ge=-87.40, le=-87.00)
 
 
 class SolicitudLlamadaIndividual(BaseModel):

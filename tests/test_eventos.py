@@ -27,8 +27,6 @@ def test_generar_evento_individual_valido() -> None:
         "prioridad": "alta",
         "ubicacion": {
             "sector": "Bulevar Suyapa",
-            "latitud": 14.081,
-            "longitud": -87.176,
         },
     }
 
@@ -44,6 +42,9 @@ def test_generar_evento_individual_valido() -> None:
     assert evento["distrito_id"] == "D-01"
     assert evento["tipo_emergencia"] == "EM-02"
     assert evento["prioridad"] == "alta"
+    assert evento["ubicacion"] == {
+        "sector": "Bulevar Suyapa",
+    }
     assert evento["estado"] == "reportada"
     assert evento["modo_generacion"] == "individual"
     assert evento["lote_id"] is None
@@ -56,7 +57,7 @@ def test_generar_evento_individual_valido() -> None:
 
 
 def test_rechazar_evento_individual_invalido() -> None:
-    """Comprueba que la API rechace datos fuera del modelo."""
+    """Comprueba que la API rechace valores no permitidos."""
 
     solicitud_invalida = {
         "distrito_id": "D-20",
@@ -64,8 +65,8 @@ def test_rechazar_evento_individual_invalido() -> None:
         "prioridad": "urgente",
         "ubicacion": {
             "sector": "X",
-            "latitud": 20,
-            "longitud": -100,
+            "latitud": 14.081,
+            "longitud": -87.176,
         },
     }
 
@@ -78,7 +79,38 @@ def test_rechazar_evento_individual_invalido() -> None:
 
     errores = respuesta.json()["detail"]
 
-    assert len(errores) >= 4
+    ubicaciones_errores = {
+        tuple(error["loc"])
+        for error in errores
+    }
+
+    assert (
+        "body",
+        "distrito_id",
+    ) in ubicaciones_errores
+
+    assert (
+        "body",
+        "prioridad",
+    ) in ubicaciones_errores
+
+    assert (
+        "body",
+        "ubicacion",
+        "sector",
+    ) in ubicaciones_errores
+
+    assert (
+        "body",
+        "ubicacion",
+        "latitud",
+    ) in ubicaciones_errores
+
+    assert (
+        "body",
+        "ubicacion",
+        "longitud",
+    ) in ubicaciones_errores
 
 
 def test_generar_lote_de_mil_eventos() -> None:
@@ -128,6 +160,10 @@ def test_generar_lote_de_mil_eventos() -> None:
         assert evento["escenario"] == "normal"
         assert evento["estado"] == "reportada"
 
+        assert set(evento["ubicacion"].keys()) == {
+            "sector",
+        }
+
 
 def test_semilla_repite_las_distribuciones() -> None:
     """Comprueba que una semilla produzca resultados repetibles."""
@@ -169,7 +205,6 @@ def test_semilla_repite_las_distribuciones() -> None:
         == segundo_resultado["distribucion_prioridades"]
     )
 
-    # Cada ejecución sigue representando un lote distinto.
     assert (
         primer_resultado["lote_id"]
         != segundo_resultado["lote_id"]

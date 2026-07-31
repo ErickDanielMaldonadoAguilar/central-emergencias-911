@@ -8,10 +8,8 @@ from generador.app.models.evento import (
 
 
 class PerfilDistrito(TypedDict):
-    """Estructura de configuración geográfica de un distrito."""
+    """Información simulada asociada a un distrito."""
 
-    latitud: float
-    longitud: float
     sectores: list[str]
 
 
@@ -49,13 +47,10 @@ PESOS_PRIORIDADES: dict[Prioridad, int] = {
 }
 
 
-# Perfiles geográficos simulados.
-# Estas ubicaciones son académicas y no representan
-# divisiones oficiales del Sistema Nacional de Emergencias 911.
+# Sectores simulados utilizados en cada distrito.
+# No representan divisiones oficiales del 911.
 PERFILES_DISTRITOS: dict[DistritoId, PerfilDistrito] = {
     DistritoId.CENTRO: {
-        "latitud": 14.0723,
-        "longitud": -87.1921,
         "sectores": [
             "Zona Centro A",
             "Zona Centro B",
@@ -63,8 +58,6 @@ PERFILES_DISTRITOS: dict[DistritoId, PerfilDistrito] = {
         ],
     },
     DistritoId.NORTE: {
-        "latitud": 14.1200,
-        "longitud": -87.1900,
         "sectores": [
             "Zona Norte A",
             "Zona Norte B",
@@ -72,8 +65,6 @@ PERFILES_DISTRITOS: dict[DistritoId, PerfilDistrito] = {
         ],
     },
     DistritoId.SUR: {
-        "latitud": 14.0300,
-        "longitud": -87.2050,
         "sectores": [
             "Zona Sur A",
             "Zona Sur B",
@@ -81,8 +72,6 @@ PERFILES_DISTRITOS: dict[DistritoId, PerfilDistrito] = {
         ],
     },
     DistritoId.ESTE: {
-        "latitud": 14.0800,
-        "longitud": -87.1500,
         "sectores": [
             "Zona Este A",
             "Zona Este B",
@@ -90,8 +79,6 @@ PERFILES_DISTRITOS: dict[DistritoId, PerfilDistrito] = {
         ],
     },
     DistritoId.OESTE: {
-        "latitud": 14.0800,
-        "longitud": -87.2500,
         "sectores": [
             "Zona Oeste A",
             "Zona Oeste B",
@@ -99,8 +86,6 @@ PERFILES_DISTRITOS: dict[DistritoId, PerfilDistrito] = {
         ],
     },
     DistritoId.COMAYAGUELA: {
-        "latitud": 14.0900,
-        "longitud": -87.2100,
         "sectores": [
             "Zona Comayagüela A",
             "Zona Comayagüela B",
