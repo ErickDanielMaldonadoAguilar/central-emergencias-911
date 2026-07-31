@@ -1,6 +1,7 @@
 import random
 import time
 from collections import Counter
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal
 from uuid import UUID, uuid4
@@ -25,14 +26,24 @@ from generador.app.models.evento import (
 )
 
 
-ZONA_HORARIA_HONDURAS = ZoneInfo("America/Tegucigalpa")
+ZONA_HORARIA_HONDURAS = ZoneInfo(
+    "America/Tegucigalpa"
+)
+
+
+@dataclass(frozen=True)
+class LoteGenerado:
+    """Contiene el resumen y todos los eventos de un lote."""
+
+    resumen: ResultadoLote
+    eventos: list[EventoEmergencia]
 
 
 def _crear_numero_reporte(
     fecha_evento: datetime,
     evento_id: UUID,
 ) -> str:
-    """Crea un número de reporte legible para cada emergencia."""
+    """Crea un número de reporte legible para una emergencia."""
 
     return (
         f"EMG-{fecha_evento:%Y%m%d-%H%M%S}-"
@@ -51,7 +62,10 @@ def _construir_evento(
 ) -> EventoEmergencia:
     """Construye un evento completo con sus campos técnicos."""
 
-    fecha_actual = datetime.now(ZONA_HORARIA_HONDURAS)
+    fecha_actual = datetime.now(
+        ZONA_HORARIA_HONDURAS
+    )
+
     evento_id = uuid4()
 
     return EventoEmergencia(
@@ -89,21 +103,40 @@ def crear_evento_individual(
     )
 
 
-def crear_lote_eventos(
+def crear_lote_eventos_completo(
     solicitud: SolicitudLote,
-) -> ResultadoLote:
-    """Genera un lote de eventos con distribuciones ponderadas."""
+) -> LoteGenerado:
+    """Genera todos los eventos y el resumen de un lote."""
 
-    generador_aleatorio = random.Random(solicitud.semilla)
+    generador_aleatorio = random.Random(
+        solicitud.semilla
+    )
+
     lote_id = uuid4()
 
-    distritos = list(PESOS_DISTRITOS.keys())
-    tipos_emergencia = list(PESOS_TIPOS_EMERGENCIA.keys())
-    prioridades = list(PESOS_PRIORIDADES.keys())
+    distritos = list(
+        PESOS_DISTRITOS.keys()
+    )
 
-    pesos_distritos = list(PESOS_DISTRITOS.values())
-    pesos_tipos = list(PESOS_TIPOS_EMERGENCIA.values())
-    pesos_prioridades = list(PESOS_PRIORIDADES.values())
+    tipos_emergencia = list(
+        PESOS_TIPOS_EMERGENCIA.keys()
+    )
+
+    prioridades = list(
+        PESOS_PRIORIDADES.keys()
+    )
+
+    pesos_distritos = list(
+        PESOS_DISTRITOS.values()
+    )
+
+    pesos_tipos = list(
+        PESOS_TIPOS_EMERGENCIA.values()
+    )
+
+    pesos_prioridades = list(
+        PESOS_PRIORIDADES.values()
+    )
 
     contador_distritos: Counter[str] = Counter()
     contador_tipos: Counter[str] = Counter()
@@ -132,7 +165,9 @@ def crear_lote_eventos(
             k=1,
         )[0]
 
-        perfil = PERFILES_DISTRITOS[distrito]
+        perfil = PERFILES_DISTRITOS[
+            distrito
+        ]
 
         sector = generador_aleatorio.choice(
             perfil["sectores"]
@@ -152,20 +187,26 @@ def crear_lote_eventos(
 
         eventos.append(evento)
 
-        contador_distritos[distrito.value] += 1
-        contador_tipos[tipo_emergencia.value] += 1
-        contador_prioridades[prioridad.value] += 1
+        contador_distritos[
+            distrito.value
+        ] += 1
 
-    duracion_segundos = time.perf_counter() - inicio
+        contador_tipos[
+            tipo_emergencia.value
+        ] += 1
+
+        contador_prioridades[
+            prioridad.value
+        ] += 1
+
+    duracion_segundos = (
+        time.perf_counter() - inicio
+    )
 
     if duracion_segundos <= 0:
         duracion_segundos = 0.000001
 
-    eventos_por_segundo = (
-        len(eventos) / duracion_segundos
-    )
-
-    return ResultadoLote(
+    resumen = ResultadoLote(
         lote_id=lote_id,
         cantidad_solicitada=solicitud.cantidad,
         cantidad_generada=len(eventos),
@@ -174,7 +215,7 @@ def crear_lote_eventos(
             3,
         ),
         eventos_por_segundo=round(
-            eventos_por_segundo,
+            len(eventos) / duracion_segundos,
             2,
         ),
         distribucion_distritos=dict(
@@ -188,3 +229,20 @@ def crear_lote_eventos(
         ),
         muestra=eventos[:5],
     )
+
+    return LoteGenerado(
+        resumen=resumen,
+        eventos=eventos,
+    )
+
+
+def crear_lote_eventos(
+    solicitud: SolicitudLote,
+) -> ResultadoLote:
+    """Genera un lote y devuelve solamente su resumen."""
+
+    lote_generado = crear_lote_eventos_completo(
+        solicitud
+    )
+
+    return lote_generado.resumen
