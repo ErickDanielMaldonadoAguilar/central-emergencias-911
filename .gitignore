@@ -1,18 +1,30 @@
-# Entornos virtuales de Python
+# Entorno virtual
 .venv/
-venv/
 
-# Variables privadas
-.env
-
-# Archivos temporales de Python
+# Archivos generados por Python
 __pycache__/
 *.py[cod]
+*$py.class
+
+# Pruebas y herramientas
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
-# Configuración local de Visual Studio Code
+# Variables y credenciales locales
+.env
+infraestructura/.env
+
+# Editores
 .vscode/
+.idea/
 
-# Archivos del sistema operativo
-Thumbs.db
+# Registros y archivos temporales
+*.log
+*.tmp
+
+# Sistema operativo
 .DS_Store
+Thumbs.db
