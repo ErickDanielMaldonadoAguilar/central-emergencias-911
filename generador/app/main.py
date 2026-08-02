@@ -10,15 +10,18 @@ from fastapi.staticfiles import StaticFiles
 
 from generador.app.models.evento import (
     ConfirmacionKafka,
+    ConfirmacionLoteKafka,
     EventoEmergencia,
     ResultadoEventoKafka,
     ResultadoLote,
+    ResultadoLoteKafka,
     SolicitudLlamadaIndividual,
     SolicitudLote,
 )
 from generador.app.services.generador_eventos import (
     crear_evento_individual,
     crear_lote_eventos,
+    crear_lote_eventos_completo,
 )
 from generador.app.services.productor_kafka import (
     ErrorPublicacionKafka,
@@ -34,9 +37,9 @@ app = FastAPI(
     title="Central de Emergencias 911 - Generador",
     description=(
         "Servicio encargado de generar llamadas de emergencia "
-        "individuales y por lotes para la simulación."
+        "individuales y por lotes, y publicarlas en Kafka."
     ),
-    version="0.2.0",
+    version="0.3.0",
 )
 
 
@@ -47,8 +50,8 @@ app.mount(
 )
 
 
-# Se crea una sola instancia y se reutiliza.
-# No se crea un productor nuevo por cada clic.
+# La instancia se reutiliza para las publicaciones individuales
+# y masivas. No se crea un productor nuevo por cada solicitud.
 productor_kafka = ProductorEventosKafka()
 
 
@@ -67,7 +70,7 @@ def mostrar_interfaz() -> FileResponse:
 
 @app.get("/health", tags=["Estado"])
 def verificar_salud() -> dict[str, str]:
-    """Revisa la disponibilidad básica del servicio."""
+    """Revisa la disponibilidad básica del generador."""
 
     return {
         "status": "ok",
@@ -138,6 +141,69 @@ def generar_y_publicar_evento_individual(
 def generar_eventos_lote(
     solicitud: SolicitudLote,
 ) -> ResultadoLote:
-    """Genera múltiples llamadas todavía sin enviarlas a Kafka."""
+    """Genera un lote sin publicarlo en Kafka."""
 
     return crear_lote_eventos(solicitud)
+
+
+@app.post(
+    "/eventos/lote/kafka",
+    response_model=ResultadoLoteKafka,
+    status_code=status.HTTP_201_CREATED,
+    tags=["Kafka"],
+)
+def generar_y_publicar_lote(
+    solicitud: SolicitudLote,
+) -> ResultadoLoteKafka:
+    """Genera un lote completo y lo publica en Kafka."""
+
+    lote = crear_lote_eventos_completo(
+        solicitud
+    )
+
+    try:
+        confirmacion = (
+            productor_kafka.publicar_lote_y_confirmar(
+                lote.eventos
+            )
+        )
+    except ErrorPublicacionKafka as error:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "El lote fue generado, pero Kafka "
+                f"no pudo confirmarlo completamente: {error}"
+            ),
+        ) from error
+
+    return ResultadoLoteKafka(
+        generacion=lote.resumen,
+        kafka=ConfirmacionLoteKafka(
+            topic=confirmacion.topic,
+            cantidad_enviada=(
+                confirmacion.cantidad_enviada
+            ),
+            cantidad_confirmada=(
+                confirmacion.cantidad_confirmada
+            ),
+            cantidad_fallida=(
+                confirmacion.cantidad_fallida
+            ),
+            duracion_ms=confirmacion.duracion_ms,
+            eventos_por_segundo=(
+                confirmacion.eventos_por_segundo
+            ),
+            confirmaciones_por_particion=(
+                confirmacion
+                .confirmaciones_por_particion
+            ),
+            primer_offset_por_particion=(
+                confirmacion
+                .primer_offset_por_particion
+            ),
+            ultimo_offset_por_particion=(
+                confirmacion
+                .ultimo_offset_por_particion
+            ),
+        ),
+    )

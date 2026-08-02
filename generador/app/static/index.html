@@ -42,8 +42,8 @@
 
             <p>
                 Esta pantalla permite crear una llamada manualmente
-                o generar miles de eventos para simular un pico de
-                emergencias.
+                o enviar miles de eventos a Apache Kafka para simular
+                un pico de emergencias.
             </p>
         </section>
 
@@ -197,7 +197,7 @@
                         id="botonLote"
                         type="submit"
                     >
-                        Generar lote
+                        Generar y enviar lote
                     </button>
                 </form>
             </article>
@@ -220,7 +220,7 @@
 
             <div id="metricas" class="metricas oculto">
                 <div>
-                    <span>Eventos generados</span>
+                    <span>Eventos confirmados</span>
 
                     <strong id="cantidadGenerada">
                         0
@@ -228,7 +228,7 @@
                 </div>
 
                 <div>
-                    <span>Duración</span>
+                    <span>Duración en Kafka</span>
 
                     <strong id="duracionGeneracion">
                         0 ms
@@ -236,7 +236,7 @@
                 </div>
 
                 <div>
-                    <span>Eventos por segundo</span>
+                    <span>Eventos por segundo en Kafka</span>
 
                     <strong id="eventosSegundo">
                         0

@@ -67,7 +67,7 @@ class SolicitudLlamadaIndividual(BaseModel):
 
 
 class EventoEmergencia(SolicitudLlamadaIndividual):
-    """Evento completo que será enviado a Kafka."""
+    """Evento completo utilizado por el sistema."""
 
     evento_id: UUID
     numero_reporte: str
@@ -110,7 +110,7 @@ class ResultadoLote(BaseModel):
 
 
 class ConfirmacionKafka(BaseModel):
-    """Datos confirmados por Kafka después de publicar un evento."""
+    """Confirmación de un evento individual en Kafka."""
 
     topic: str
     particion: int
@@ -120,7 +120,28 @@ class ConfirmacionKafka(BaseModel):
 
 
 class ResultadoEventoKafka(BaseModel):
-    """Evento generado junto con la confirmación del broker."""
+    """Evento individual junto con la confirmación de Kafka."""
 
     evento: EventoEmergencia
     kafka: ConfirmacionKafka
+
+
+class ConfirmacionLoteKafka(BaseModel):
+    """Resumen confirmado por Kafka para un lote masivo."""
+
+    topic: str
+    cantidad_enviada: int
+    cantidad_confirmada: int
+    cantidad_fallida: int
+    duracion_ms: float
+    eventos_por_segundo: float
+    confirmaciones_por_particion: dict[int, int]
+    primer_offset_por_particion: dict[int, int]
+    ultimo_offset_por_particion: dict[int, int]
+
+
+class ResultadoLoteKafka(BaseModel):
+    """Resultado de generación y publicación de un lote."""
+
+    generacion: ResultadoLote
+    kafka: ConfirmacionLoteKafka
