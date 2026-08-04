@@ -138,17 +138,19 @@ async function comprobarServicio() {
 
 formularioIndividual.addEventListener(
     "submit",
-    async (evento) => {
-        evento.preventDefault();
+    async (eventoFormulario) => {
+        eventoFormulario.preventDefault();
 
         botonIndividual.disabled = true;
+
         botonIndividual.textContent =
-            "Generando...";
+            "Enviando a Kafka...";
 
         metricas.classList.add("oculto");
 
         mensajeResultado.textContent =
-            "Procesando llamada individual.";
+            "Generando la llamada y esperando "
+            + "la confirmación de Kafka.";
 
         salida.textContent =
             "Procesando solicitud...";
@@ -184,12 +186,13 @@ formularioIndividual.addEventListener(
 
         try {
             const resultado = await enviarDatos(
-                "/eventos/individual",
+                "/eventos/individual/kafka",
                 solicitud
             );
 
             mensajeResultado.textContent =
-                "La llamada fue generada correctamente.";
+                "La llamada fue generada y "
+                + "confirmada por Kafka.";
 
             salida.textContent = JSON.stringify(
                 resultado,
@@ -199,7 +202,7 @@ formularioIndividual.addEventListener(
 
             cambiarEstadoResultado(
                 "exito",
-                "Completado"
+                "Confirmado"
             );
         } catch (error) {
             mostrarError(error);
@@ -215,20 +218,22 @@ formularioIndividual.addEventListener(
 
 formularioLote.addEventListener(
     "submit",
-    async (evento) => {
-        evento.preventDefault();
+    async (eventoFormulario) => {
+        eventoFormulario.preventDefault();
 
         botonLote.disabled = true;
+
         botonLote.textContent =
-            "Generando lote...";
+            "Enviando lote a Kafka...";
 
         metricas.classList.add("oculto");
 
         mensajeResultado.textContent =
-            "Procesando generación masiva.";
+            "Generando los eventos y esperando "
+            + "las confirmaciones de Kafka.";
 
         salida.textContent =
-            "Generando eventos...";
+            "Procesando lote masivo...";
 
         cambiarEstadoResultado(
             "procesando",
@@ -257,29 +262,29 @@ formularioLote.addEventListener(
 
         try {
             const resultado = await enviarDatos(
-                "/eventos/lote",
+                "/eventos/lote/kafka",
                 solicitud
             );
 
             cantidadGenerada.textContent =
-                resultado.cantidad_generada.toLocaleString(
-                    "es-HN"
-                );
+                resultado.kafka
+                    .cantidad_confirmada
+                    .toLocaleString("es-HN");
 
             duracionGeneracion.textContent =
-                `${resultado.duracion_ms.toLocaleString(
-                    "es-HN"
-                )} ms`;
+                `${resultado.kafka.duracion_ms
+                    .toLocaleString("es-HN")} ms`;
 
             eventosSegundo.textContent =
-                resultado.eventos_por_segundo.toLocaleString(
-                    "es-HN"
-                );
+                resultado.kafka
+                    .eventos_por_segundo
+                    .toLocaleString("es-HN");
 
             metricas.classList.remove("oculto");
 
             mensajeResultado.textContent =
-                "El lote fue generado correctamente.";
+                "El lote fue generado y todos los eventos "
+                + "fueron confirmados por Kafka.";
 
             salida.textContent = JSON.stringify(
                 resultado,
@@ -289,7 +294,7 @@ formularioLote.addEventListener(
 
             cambiarEstadoResultado(
                 "exito",
-                "Completado"
+                "Confirmado"
             );
         } catch (error) {
             mostrarError(error);
@@ -297,7 +302,7 @@ formularioLote.addEventListener(
             botonLote.disabled = false;
 
             botonLote.textContent =
-                "Generar lote";
+                "Generar y enviar lote";
         }
     }
 );

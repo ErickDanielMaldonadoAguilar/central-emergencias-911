@@ -51,7 +51,10 @@ class Ubicacion(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    sector: str = Field(min_length=2, max_length=80)
+    sector: str = Field(
+        min_length=2,
+        max_length=80,
+    )
 
 
 class SolicitudLlamadaIndividual(BaseModel):
@@ -64,7 +67,7 @@ class SolicitudLlamadaIndividual(BaseModel):
 
 
 class EventoEmergencia(SolicitudLlamadaIndividual):
-    """Evento completo que posteriormente será enviado a Kafka."""
+    """Evento completo utilizado por el sistema."""
 
     evento_id: UUID
     numero_reporte: str
@@ -79,8 +82,16 @@ class EventoEmergencia(SolicitudLlamadaIndividual):
 class SolicitudLote(BaseModel):
     """Parámetros para generar un lote masivo de llamadas."""
 
-    cantidad: int = Field(ge=1, le=10_000)
-    semilla: int | None = Field(default=None, ge=0)
+    cantidad: int = Field(
+        ge=1,
+        le=10_000,
+    )
+
+    semilla: int | None = Field(
+        default=None,
+        ge=0,
+    )
+
     escenario: Literal["normal"] = "normal"
 
 
@@ -96,3 +107,41 @@ class ResultadoLote(BaseModel):
     distribucion_tipos: dict[str, int]
     distribucion_prioridades: dict[str, int]
     muestra: list[EventoEmergencia]
+
+
+class ConfirmacionKafka(BaseModel):
+    """Confirmación de un evento individual en Kafka."""
+
+    topic: str
+    particion: int
+    offset: int
+    distrito_id: str
+    evento_id: str
+
+
+class ResultadoEventoKafka(BaseModel):
+    """Evento individual junto con la confirmación de Kafka."""
+
+    evento: EventoEmergencia
+    kafka: ConfirmacionKafka
+
+
+class ConfirmacionLoteKafka(BaseModel):
+    """Resumen confirmado por Kafka para un lote masivo."""
+
+    topic: str
+    cantidad_enviada: int
+    cantidad_confirmada: int
+    cantidad_fallida: int
+    duracion_ms: float
+    eventos_por_segundo: float
+    confirmaciones_por_particion: dict[int, int]
+    primer_offset_por_particion: dict[int, int]
+    ultimo_offset_por_particion: dict[int, int]
+
+
+class ResultadoLoteKafka(BaseModel):
+    """Resultado de generación y publicación de un lote."""
+
+    generacion: ResultadoLote
+    kafka: ConfirmacionLoteKafka

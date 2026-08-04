@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Balance de Carga - Central 911</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/styles.css"
+    >
+</head>
+
+<body>
+    <header class="encabezado">
+        <div class="contenedor">
+            <p class="etiqueta-superior">
+                Proyecto integrador de Big Data
+            </p>
+
+            <div class="encabezado-contenido">
+                <div>
+                    <h1>
+                        Balance de carga de la Central 911
+                    </h1>
+
+                    <p>
+                        Consulta de llamadas activas y unidades
+                        disponibles por distrito.
+                    </p>
+                </div>
+
+                <div
+                    id="estadoServicio"
+                    class="estado-servicio cargando"
+                >
+                    Consultando MongoDB...
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <section class="barra-controles">
+            <div>
+                <label for="selectorDistrito">
+                    Distrito seleccionado
+                </label>
+
+                <select id="selectorDistrito">
+                    <option value="">
+                        Cargando distritos...
+                    </option>
+                </select>
+            </div>
+
+            <div class="actualizacion">
+                <span>
+                    Último cálculo:
+                </span>
+
+                <strong id="fechaCalculo">
+                    Sin información
+                </strong>
+
+                <button
+                    id="botonActualizar"
+                    type="button"
+                >
+                    Actualizar datos
+                </button>
+            </div>
+        </section>
+
+        <section class="seccion">
+            <div class="titulo-seccion">
+                <div>
+                    <p class="subtitulo-seccion">
+                        Exposición general
+                    </p>
+
+                    <h2>
+                        Estado de toda la central
+                    </h2>
+                </div>
+
+                <span
+                    id="estadoCentral"
+                    class="insignia"
+                >
+                    En espera
+                </span>
+            </div>
+
+            <div class="metricas metricas-central">
+                <article class="metrica">
+                    <span>
+                        Llamadas activas
+                    </span>
+
+                    <strong id="centralLlamadas">
+                        0
+                    </strong>
+                </article>
+
+                <article class="metrica">
+                    <span>
+                        Unidades disponibles
+                    </span>
+
+                    <strong id="centralUnidades">
+                        0
+                    </strong>
+                </article>
+
+                <article class="metrica">
+                    <span>
+                        Saldo general
+                    </span>
+
+                    <strong id="centralSaldo">
+                        0
+                    </strong>
+                </article>
+
+                <article class="metrica">
+                    <span>
+                        Carga general
+                    </span>
+
+                    <strong id="centralPorcentaje">
+                        0 %
+                    </strong>
+                </article>
+
+                <article class="metrica">
+                    <span>
+                        Distritos sobrecargados
+                    </span>
+
+                    <strong id="centralSobrecargados">
+                        0
+                    </strong>
+                </article>
+
+                <article class="metrica">
+                    <span>
+                        Déficit local acumulado
+                    </span>
+
+                    <strong id="centralExcedentes">
+                        0
+                    </strong>
+                </article>
+            </div>
+        </section>
+
+        <section class="seccion">
+            <div class="titulo-seccion">
+                <div>
+                    <p class="subtitulo-seccion">
+                        Consulta por distrito
+                    </p>
+
+                    <h2 id="nombreDistrito">
+                        Seleccione un distrito
+                    </h2>
+                </div>
+
+                <span
+                    id="estadoDistrito"
+                    class="insignia"
+                >
+                    En espera
+                </span>
+            </div>
+
+            <div class="metricas">
+                <article class="metrica">
+                    <span>
+                        Llamadas activas
+                    </span>
+
+                    <strong id="llamadasActivas">
+                        0
+                    </strong>
+                </article>
+
+                <article class="metrica">
+                    <span>
+                        Unidades disponibles
+                    </span>
+
+                    <strong id="unidadesDisponibles">
+                        0
+                    </strong>
+                </article>
+
+                <article class="metrica">
+                    <span>
+                        Saldo de unidades
+                    </span>
+
+                    <strong id="saldoUnidades">
+                        0
+                    </strong>
+                </article>
+
+                <article class="metrica">
+                    <span>
+                        Porcentaje de carga
+                    </span>
+
+                    <strong id="porcentajeCarga">
+                        0 %
+                    </strong>
+                </article>
+            </div>
+
+            <div class="carga-visual">
+                <div class="carga-texto">
+                    <span>
+                        Nivel de utilización
+                    </span>
+
+                    <strong id="textoCarga">
+                        0 %
+                    </strong>
+                </div>
+
+                <div class="barra-fondo">
+                    <div
+                        id="barraCarga"
+                        class="barra-progreso"
+                    ></div>
+                </div>
+            </div>
+
+            <div class="distribucion">
+                <h3>
+                    Distribución por tipo de emergencia
+                </h3>
+
+                <div id="distribucionTipos">
+                    Sin información.
+                </div>
+            </div>
+        </section>
+
+        <section class="seccion">
+            <div class="titulo-seccion">
+                <div>
+                    <p class="subtitulo-seccion">
+                        Comparación
+                    </p>
+
+                    <h2>
+                        Estado de los seis distritos
+                    </h2>
+                </div>
+            </div>
+
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Distrito</th>
+                            <th>Llamadas</th>
+                            <th>Unidades</th>
+                            <th>Saldo</th>
+                            <th>Carga</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaDistritos">
+                        <tr>
+                            <td colspan="6">
+                                Cargando información...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside class="nota">
+            Los distritos, cantidades de unidades y eventos
+            utilizados son datos simulados con fines académicos.
+            El cálculo considera las llamadas activas recibidas
+            durante los últimos 60 minutos.
+        </aside>
+    </main>
+
+    <script
+        src="/static/app.js"
+        defer
+    ></script>
+</body>
+</html>
